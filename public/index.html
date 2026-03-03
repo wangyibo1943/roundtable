@@ -3,280 +3,573 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>圆桌 · 自由讨论室</title>
+<title>圆桌 · 讨论室</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e0e14;--sf:#15151e;--s2:#1c1c28;--bd:#28283a;--tx:#ddddf0;--mt:#52527a;--gold:#e8b84b;--gbg:#1e1a0a;}
+:root{
+  --bg:#0e0e14;--sf:#15151e;--s2:#1c1c28;--bd:#28283a;
+  --tx:#ddddf0;--mt:#52527a;--gold:#e8b84b;--gbg:#1e1a0a;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--tx);font-family:'Noto Serif SC',serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-#setup{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 40% 40%,#181828,var(--bg) 65%);}
-.box{width:100%;max-width:640px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:30px;max-height:92vh;overflow-y:auto;}
+
+/* ── SETUP ── */
+#setup{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(ellipse at 40% 40%,#181828,var(--bg) 65%);}
+.box{width:100%;max-width:680px;background:var(--sf);border:1px solid var(--bd);
+  border-radius:16px;padding:30px;max-height:94vh;overflow-y:auto;}
 .box::-webkit-scrollbar{width:3px;}.box::-webkit-scrollbar-thumb{background:var(--bd);}
 .brand{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:8px;}
 .h1{font-size:24px;font-weight:700;margin-bottom:5px;}
-.sub{font-size:13px;color:var(--mt);line-height:1.6;margin-bottom:22px;}
-.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mt);text-transform:uppercase;margin:18px 0 8px;}
+.sub{font-size:13px;color:var(--mt);line-height:1.6;margin-bottom:24px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mt);
+  text-transform:uppercase;margin:20px 0 10px;}
 .row{display:flex;gap:8px;}
-.inp{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);outline:none;transition:border-color .2s;}
+.inp{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  padding:10px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);
+  outline:none;transition:border-color .2s;}
 .inp:focus{border-color:var(--gold);}
-.sel{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-family:'Noto Serif SC',serif;font-size:13px;color:var(--tx);outline:none;cursor:pointer;}
-.grid{display:flex;flex-direction:column;gap:7px;}
-.acard{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;}
-.acard:hover{border-color:var(--ac);}
-.acard.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 9%,var(--s2));}
-.chk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .2s;}
-.acard.on .chk{background:var(--ac);border-color:var(--ac);color:#000;}
-.aem{font-size:17px;flex-shrink:0;}
-.aname{font-size:13px;font-weight:600;}
-.adesc{font-size:11px;color:var(--mt);margin-top:1px;}
-.ta{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);resize:none;outline:none;height:74px;line-height:1.6;transition:border-color .2s;}
+.sel{background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  padding:10px 12px;font-family:'Noto Serif SC',serif;font-size:13px;color:var(--tx);
+  outline:none;cursor:pointer;}
+
+/* Advisor builder */
+.advisors{display:flex;flex-direction:column;gap:10px;}
+
+.advisor-row{
+  background:var(--s2);border:1.5px solid var(--bd);border-radius:12px;
+  padding:14px 16px;transition:border-color .2s;
+}
+.advisor-row.active{border-color:var(--rc);}
+
+.advisor-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.advisor-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  width:24px;height:24px;border-radius:50%;
+  border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;
+  color:var(--mt);flex-shrink:0;
+}
+.advisor-title{font-size:13px;font-weight:600;color:var(--tx);flex:1;}
+.remove-btn{background:none;border:none;color:var(--mt);cursor:pointer;font-size:16px;
+  padding:0 4px;transition:color .2s;line-height:1;}
+.remove-btn:hover{color:#f44747;}
+
+.advisor-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* Brain selector */
+.brain-opts{display:flex;gap:6px;}
+.brain-opt{
+  flex:1;padding:8px 6px;background:var(--bg);border:1.5px solid var(--bd);
+  border-radius:8px;text-align:center;cursor:pointer;transition:all .2s;
+}
+.brain-opt:hover{border-color:var(--bc);}
+.brain-opt.picked{border-color:var(--bc);background:color-mix(in srgb,var(--bc) 12%,var(--bg));}
+.brain-em{font-size:18px;display:block;margin-bottom:3px;}
+.brain-name{font-size:10px;font-family:'JetBrains Mono',monospace;}
+.brain-opt.picked .brain-name{color:var(--bc);}
+
+/* Role selector */
+.role-opts{display:flex;flex-wrap:wrap;gap:5px;}
+.role-opt{
+  font-size:12px;padding:5px 11px;background:var(--bg);border:1px solid var(--bd);
+  border-radius:20px;cursor:pointer;transition:all .2s;color:var(--mt);
+  font-family:'Noto Serif SC',serif;
+}
+.role-opt:hover{border-color:var(--rc);}
+.role-opt.picked{border-color:var(--rc);background:color-mix(in srgb,var(--rc) 12%,var(--bg));color:var(--rc);}
+
+.add-advisor{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px;background:transparent;border:1px dashed var(--bd);border-radius:12px;
+  cursor:pointer;color:var(--mt);font-family:'Noto Serif SC',serif;font-size:13px;
+  transition:all .2s;width:100%;
+}
+.add-advisor:hover{border-color:var(--gold);color:var(--gold);}
+
+.ta{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  padding:11px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);
+  resize:none;outline:none;height:74px;line-height:1.6;transition:border-color .2s;}
 .ta:focus{border-color:var(--gold);}
-.qtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
-.qt{font-size:11px;padding:4px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;color:var(--mt);cursor:pointer;transition:all .2s;}
+.qtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.qt{font-size:11px;padding:4px 11px;background:var(--s2);border:1px solid var(--bd);
+  border-radius:20px;color:var(--mt);cursor:pointer;transition:all .2s;}
 .qt:hover{border-color:var(--gold);color:var(--gold);}
-.srow{display:flex;align-items:center;gap:12px;margin-top:4px;}
-.slider{flex:1;accent-color:var(--gold);}
-.slbls{display:flex;justify-content:space-between;font-size:11px;color:var(--mt);margin-top:3px;}
-.go{width:100%;margin-top:22px;padding:13px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.go{width:100%;margin-top:22px;padding:13px;background:var(--gold);color:#000;border:none;
+  border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;
+  letter-spacing:2px;cursor:pointer;transition:all .2s;}
 .go:hover{background:#f0c45a;}.go:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── CHAT ── */
 #chat{flex:1;display:none;flex-direction:column;overflow:hidden;}
-.topbar{padding:11px 18px;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;}
+.topbar{padding:11px 18px;background:var(--sf);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:10px;}
 .topictl{font-size:13px;color:var(--mt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .pips{display:flex;}
-.pip{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;margin-left:-4px;background:var(--s2);}
-.backbtn{background:none;border:1px solid var(--bd);color:var(--mt);padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;flex-shrink:0;}
+.pip{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg);
+  display:flex;align-items:center;justify-content:center;font-size:11px;margin-left:-5px;background:var(--s2);}
+.backbtn{background:none;border:1px solid var(--bd);color:var(--mt);padding:5px 11px;
+  border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Serif SC',serif;
+  transition:all .2s;flex-shrink:0;}
 .backbtn:hover{border-color:var(--gold);color:var(--gold);}
-.sbar{padding:5px 18px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;min-height:28px;}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--mt);flex-shrink:0;}
-.sdot.live{background:#4ec9b0;box-shadow:0 0 6px #4ec9b030;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.stxt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:.5px;}
-.pbtn{margin-left:auto;background:none;border:1px solid var(--bd);color:var(--mt);padding:3px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;flex-shrink:0;}
-.pbtn:hover{border-color:var(--gold);color:var(--gold);}
+
+.qbar{padding:6px 18px;background:var(--s2);border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:7px;min-height:34px;overflow-x:auto;}
+.qbar::-webkit-scrollbar{height:0;}
+.qlbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);
+  letter-spacing:1px;flex-shrink:0;margin-right:4px;}
+.qchip{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;
+  font-size:11px;border:1px solid var(--bd);flex-shrink:0;transition:all .2s;color:var(--mt);}
+.qchip.now{border-color:var(--qc);color:var(--qc);background:color-mix(in srgb,var(--qc) 15%,transparent);}
+.qchip.done{opacity:.25;}
+
 .msgs{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:2px;}
 .msgs::-webkit-scrollbar{width:3px;}.msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
-.sys{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:5px 0;letter-spacing:1px;margin:4px 0;}
-.mg{margin-bottom:12px;}
+.sys{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--mt);padding:5px 0;letter-spacing:1px;margin:4px 0;}
+.divider{text-align:center;padding:8px 0;font-family:'JetBrains Mono',monospace;
+  font-size:10px;color:var(--mt);letter-spacing:2px;border-top:1px solid var(--bd);margin:6px 0 2px;}
+.mg{margin-bottom:10px;}
 .mr{display:flex;gap:9px;align-items:flex-end;}
 .mr.me{flex-direction:row-reverse;}
-.av{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--c);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:color-mix(in srgb,var(--c) 12%,var(--s2));}
-.bub{max-width:72%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.75;color:var(--tx);animation:pop .2s ease;}
+.av{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--c);
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+  background:color-mix(in srgb,var(--c) 12%,var(--s2));}
+.bub{max-width:74%;padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.75;
+  color:var(--tx);animation:pop .2s ease;}
 .bub.ai{background:var(--s2);border:1px solid var(--bd);border-bottom-left-radius:3px;}
 .bub.me{background:var(--gbg);border:1px solid var(--gold);border-bottom-right-radius:3px;color:var(--gold);}
-@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-.bn{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;margin-bottom:4px;}
+@keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.bn{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
 .bub strong{color:#fff;}
-.rq{font-size:11px;color:var(--mt);padding:4px 8px;border-left:2px solid var(--c);border-radius:3px;background:color-mix(in srgb,var(--c) 8%,transparent);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.tyr{display:flex;gap:9px;align-items:center;margin-bottom:8px;}
-.tyb{background:var(--s2);border:1px solid var(--bd);padding:9px 13px;border-radius:14px;border-bottom-left-radius:3px;display:inline-flex;gap:4px;align-items:center;}
-.tyb span{width:5px;height:5px;border-radius:50%;background:var(--mt);animation:bop 1.2s infinite;}
-.tyb span:nth-child(2){animation-delay:.2s;}.tyb span:nth-child(3){animation-delay:.4s;}
+.mtag{font-size:9px;padding:2px 6px;border-radius:3px;
+  background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--c);opacity:.8;}
+.tyr{display:flex;gap:9px;align-items:center;margin-bottom:8px;opacity:.7;}
+.tyb{background:var(--s2);border:1px solid var(--bd);padding:9px 13px;
+  border-radius:14px;border-bottom-left-radius:3px;display:inline-flex;flex-direction:column;gap:4px;}
+.tyname{font-size:10px;font-family:'JetBrains Mono',monospace;}
+.tydots{display:flex;gap:4px;align-items:center;}
+.tydots span{width:5px;height:5px;border-radius:50%;background:var(--mt);animation:bop 1.2s infinite;}
+.tydots span:nth-child(2){animation-delay:.2s;}.tydots span:nth-child(3){animation-delay:.4s;}
 @keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+
 .ia{padding:13px 18px;background:var(--sf);border-top:1px solid var(--bd);}
-.spkl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+.spkl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
 .pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
-.pill{font-size:12px;padding:4px 11px;border-radius:20px;border:1px solid var(--bd);cursor:pointer;background:transparent;font-family:'Noto Serif SC',serif;color:var(--mt);transition:all .2s;}
+.pill{font-size:12px;padding:4px 11px;border-radius:20px;border:1px solid var(--bd);
+  cursor:pointer;background:transparent;font-family:'Noto Serif SC',serif;color:var(--mt);transition:all .2s;}
 .pill.active{background:var(--c);border-color:var(--c);color:#000;font-weight:600;}
 .pill:hover:not(.active){border-color:var(--c);color:var(--c);}
 .ir{display:flex;gap:8px;align-items:flex-end;}
-.mi{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);outline:none;resize:none;line-height:1.5;max-height:100px;transition:border-color .2s;}
+.mi{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:12px;
+  padding:10px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);
+  outline:none;resize:none;line-height:1.5;max-height:100px;transition:border-color .2s;}
 .mi:focus{border-color:var(--gold);}.mi::placeholder{color:var(--mt);}
-.sb{width:40px;height:40px;background:var(--gold);border:none;border-radius:10px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.sb{width:42px;height:42px;background:var(--gold);border:none;border-radius:10px;
+  cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;}
 .sb:hover{background:#f0c45a;}.sb:disabled{opacity:.4;cursor:not-allowed;}
+.hint{font-size:11px;color:var(--mt);margin-top:6px;font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
 <body>
+
+<!-- SETUP -->
 <div id="setup">
  <div class="box">
   <div class="brand">圆桌 // Roundtable</div>
-  <div class="h1">自由讨论室</div>
-  <div class="sub">AI顾问之间会自己争起来，不等你发话。你随时可以插话，他们会回应你，也会继续互相辩论。</div>
+  <div class="h1">组建你的讨论室</div>
+  <div class="sub">选大脑、分配角色、设定议题。你说完，每位顾问依次表态。</div>
+
   <div class="lbl">你是谁</div>
   <div class="row">
    <input class="inp" id="uname" placeholder="你的名字" value="我">
-   <select class="sel" id="urole"><option>创始人</option><option>产品经理</option><option>投资人</option><option>开发者</option><option>运营</option><option>学生</option></select>
+   <select class="sel" id="urole">
+    <option>创始人</option><option>产品经理</option><option>投资人</option>
+    <option>开发者</option><option>运营</option><option>学生</option>
+   </select>
   </div>
-  <div class="lbl">选AI顾问（建议2-4位）</div>
-  <div class="grid" id="grid"></div>
+
+  <div class="lbl">配置AI顾问</div>
+  <div class="advisors" id="advisors"></div>
+  <button class="add-advisor" onclick="addAdvisor()" id="addBtn">＋ 添加顾问</button>
+
   <div class="lbl">讨论议题</div>
-  <textarea class="ta" id="topic" placeholder="输入你想讨论的商业问题或项目..."></textarea>
+  <textarea class="ta" id="topic" placeholder="越具体越好，包括你的背景、已有资源、核心疑问..."></textarea>
   <div class="qtags">
-   <span class="qt" onclick="st('AI圆桌讨论平台，多模型协作，订阅制，面向创业者')">AI圆桌平台</span>
-   <span class="qt" onclick="st('一人公司做SaaS，如何找到第一批付费用户')">一人公司SaaS</span>
-   <span class="qt" onclick="st('AI App分发平台，类似Hao123+Steam，服务个人开发者')">App分发市场</span>
-   <span class="qt" onclick="st('缠论AI交易助手，A股散户，订阅制，如何突破合规和冷启动')">缠论助手</span>
+   <span class="qt" onclick="st('AI圆桌讨论平台，多模型协作，订阅制，面向创业者，如何冷启动找到第一批用户')">AI圆桌平台</span>
+   <span class="qt" onclick="st('一人公司做SaaS，目标年收入100万，从0开始怎么走第一步')">一人公司SaaS</span>
+   <span class="qt" onclick="st('AI App分发平台，类似Hao123加Steam，服务个人开发者生态')">App分发市场</span>
+   <span class="qt" onclick="st('缠论AI交易助手，A股散户，订阅制，如何解决合规和冷启动问题')">缠论助手</span>
   </div>
-  <div class="lbl">讨论激烈程度</div>
-  <div class="srow">
-   <span style="font-size:12px;color:var(--mt)">理性</span>
-   <input class="slider" type="range" id="energy" min="1" max="3" value="2">
-   <span style="font-size:12px;color:var(--mt)">激烈</span>
-  </div>
-  <div class="slbls"><span>克制分析</span><span>正常讨论</span><span>针锋相对</span></div>
+
   <button class="go" onclick="enter()">进入讨论室 →</button>
  </div>
 </div>
+
+<!-- CHAT -->
 <div id="chat">
  <div class="topbar">
   <button class="backbtn" onclick="back()">← 重设</button>
   <div class="topictl" id="htopic"></div>
   <div class="pips" id="hpips"></div>
  </div>
- <div class="sbar">
-  <div class="sdot live" id="sdot"></div>
-  <div class="stxt" id="stxt">讨论进行中</div>
-  <button class="pbtn" id="pbtn" onclick="togglePause()">⏸ 暂停</button>
- </div>
+ <div class="qbar" id="qbar"><div class="qlbl">等待发言...</div></div>
  <div class="msgs" id="msgs"></div>
  <div class="ia">
   <div class="spkl">以谁的身份发言</div>
   <div class="pills" id="pills"></div>
   <div class="ir">
-   <textarea class="mi" id="mi" placeholder="随时插话，按 Enter 发送..." rows="1"
+   <textarea class="mi" id="mi" placeholder="输入你的观点，按 Enter 发送..." rows="1"
     onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
     oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
-   <button class="sb" onclick="send()">↑</button>
+   <button class="sb" id="sb" onclick="send()">↑</button>
   </div>
+  <div class="hint" id="hint"></div>
  </div>
 </div>
+
 <script>
-const AG=[
- {id:'S',n:'战略顾问',em:'🎯',c:'#e8b84b',d:'商业模式·市场定位·竞争策略',
-  sys:'你是战略顾问，在商业讨论群组里。有鲜明观点，会直接反驳任何人。用第一人称，偶尔@对方。'},
- {id:'G',n:'增长黑客',em:'🚀',c:'#4ec9b0',d:'获客·留存·PMF验证',
-  sys:'你是增长黑客，在商业讨论群组里。只关心数据和可执行路径，对空话没耐心。用第一人称，偶尔@对方。'},
- {id:'V',n:'风投视角',em:'💰',c:'#569cd6',d:'投资逻辑·估值·护城河',
-  sys:'你是VC，在商业讨论群组里。从资本视角切入，关心市场规模和退出，敢泼冷水。用第一人称，偶尔@对方。'},
- {id:'O',n:'运营专家',em:'⚙️',c:'#c586c0',d:'执行·用户体验·落地',
-  sys:'你是运营专家，在商业讨论群组里。专挑执行层面的漏洞，烦空谈。用第一人称，偶尔@对方。'},
- {id:'D',n:'魔鬼代言',em:'😈',c:'#f44747',d:'挑战假设·找盲点·反向思考',
-  sys:'你是魔鬼代言人，在商业讨论群组里。专门找最新发言的最大漏洞，不留情面但有逻辑。用第一人称，偶尔@对方。'},
+// ── BRAIN DEFINITIONS ─────────────────────────────────
+const BRAINS = [
+ { id:'claude', name:'Claude',  emoji:'🧠', color:'#e8b84b', desc:'Anthropic' },
+ { id:'gpt',    name:'GPT-4o',  emoji:'⚡', color:'#74b9a0', desc:'OpenAI'    },
+ { id:'gemini', name:'Gemini',  emoji:'✨', color:'#7eb8f7', desc:'Google'    },
 ];
-const EP={1:'风格克制理性，多用数据。',2:'风格直接，有话直说。',3:'风格针锋相对，遇不同意见直接反驳。'};
-let sel=['S','D','G'],sp='user',paused=false,running=false,log=[],uname='我',urole='创始人',topic='',energy=2,timer=null;
-function ga(){return AG.filter(a=>sel.includes(a.id));}
-function ig(){
- document.getElementById('grid').innerHTML=AG.map(a=>`
-  <div class="acard ${sel.includes(a.id)?'on':''}" style="--ac:${a.c}" onclick="tog('${a.id}')">
-   <div class="chk">${sel.includes(a.id)?'✓':''}</div>
-   <div class="aem">${a.em}</div>
-   <div><div class="aname" style="color:${sel.includes(a.id)?a.c:'var(--tx)'}">${a.n}</div><div class="adesc">${a.d}</div></div>
-  </div>`).join('');
+
+// ── ROLE DEFINITIONS ──────────────────────────────────
+const ROLES = [
+ { id:'strategist', name:'战略顾问', color:'#e8b84b',
+   sys:`你是战略顾问。目标：帮助用户把商业方向想清楚。
+- 给出战略视角的判断，指出最重要的机会或风险
+- 有风险就给应对思路，有机会就说怎么抓住
+- 不出难题，不只提问，要给出实质性建议
+- 100-150字，口语化，第一人称` },
+ { id:'growth', name:'增长黑客', color:'#4ec9b0',
+   sys:`你是增长黑客。目标：帮用户找到可执行的增长路径。
+- 聚焦用户获取、PMF验证和冷启动
+- 给出具体的第一步行动，而不是泛泛建议
+- 如果当前路径不可行，给出替代方案
+- 100-150字，口语化，第一人称` },
+ { id:'investor', name:'投资人', color:'#569cd6',
+   sys:`你是风险投资人。目标：从资本视角帮用户找到真正的价值所在。
+- 评估市场规模、护城河和商业模式可持续性
+- 说清楚你看好或不看好的具体原因
+- 不只泼冷水，如果有顾虑给出解决思路
+- 100-150字，口语化，第一人称` },
+ { id:'operator', name:'运营专家', color:'#c586c0',
+   sys:`你是运营专家。目标：帮用户把想法落地。
+- 找出执行层面的具体障碍
+- 给出绕过障碍或解决问题的方法
+- 把抽象想法变成可执行的第一步
+- 100-150字，口语化，第一人称` },
+ { id:'devil', name:'魔鬼代言', color:'#f44747',
+   sys:`你是魔鬼代言人。目标：让讨论更接近真相。
+- 找出当前讨论最大的假设漏洞或盲点
+- 尖锐但建设性：指出问题后，给出"如果要解决，需要做什么"
+- 不为反对而反对，要让方案变得更强
+- 100-150字，口语化，第一人称` },
+ { id:'analyst', name:'数据分析师', color:'#a8d8a8',
+   sys:`你是数据分析师。目标：用数据和案例帮用户验证方向。
+- 引用类似案例或市场数据支撑或反驳当前讨论
+- 指出哪些假设需要用数据验证，怎么验证
+- 综合多方观点，找出被忽略的维度
+- 100-150字，口语化，第一人称` },
+ { id:'legal', name:'法律顾问', color:'#ffb347',
+   sys:`你是法律顾问。目标：帮用户识别法律和合规风险。
+- 指出当前方向的监管风险或法律障碍
+- 给出合规化的可行路径或替代方案
+- 不是吓唬人，是帮用户绕过真实的坑
+- 100-150字，口语化，第一人称` },
+ { id:'custom', name:'自定义', color:'#9b9bf7',
+   sys:'' },
+];
+
+// ── STATE ─────────────────────────────────────────────
+let advisors = []; // [{brain, role, customSys}]
+let advisorCount = 0;
+let speaker = 'user';
+let isTurning = false;
+let log = [];
+let uname='我', urole='创始人', topic='', roundNum=0;
+
+// ── SETUP: ADVISOR BUILDER ────────────────────────────
+function addAdvisor(){
+ if(advisors.length >= 5) return;
+ const idx = advisors.length;
+ advisors.push({ brain: BRAINS[idx % BRAINS.length].id, role: ROLES[idx % (ROLES.length-1)].id, customSys:'' });
+ renderAdvisors();
 }
-function tog(id){
- if(sel.includes(id)){if(sel.length<=1)return;sel=sel.filter(x=>x!==id);}else sel.push(id);ig();
+
+function removeAdvisor(idx){
+ advisors.splice(idx,1);
+ renderAdvisors();
 }
-function st(t){document.getElementById('topic').value=t;}
+
+function setBrain(idx, brainId){
+ advisors[idx].brain = brainId;
+ renderAdvisors();
+}
+
+function setRole(idx, roleId){
+ advisors[idx].role = roleId;
+ renderAdvisors();
+}
+
+function renderAdvisors(){
+ const container = document.getElementById('advisors');
+ container.innerHTML = advisors.map((adv,idx) => {
+  const brain = BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+  const role = ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  const isCustom = adv.role==='custom';
+  return `
+   <div class="advisor-row active" style="--rc:${role.color}">
+    <div class="advisor-top">
+     <div class="advisor-num">${idx+1}</div>
+     <div class="advisor-title">${brain.emoji} ${brain.name} · ${role.name}</div>
+     <button class="remove-btn" onclick="removeAdvisor(${idx})">×</button>
+    </div>
+
+    <div style="margin-bottom:8px">
+     <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mt);letter-spacing:1px;margin-bottom:6px">选大脑</div>
+     <div class="brain-opts">
+      ${BRAINS.map(b=>`
+       <div class="brain-opt ${adv.brain===b.id?'picked':''}" style="--bc:${b.color}" onclick="setBrain(${idx},'${b.id}')">
+        <span class="brain-em">${b.emoji}</span>
+        <span class="brain-name" style="color:${adv.brain===b.id?b.color:'var(--mt)'}">${b.name}</span>
+       </div>`).join('')}
+     </div>
+    </div>
+
+    <div>
+     <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mt);letter-spacing:1px;margin-bottom:6px">赋予角色</div>
+     <div class="role-opts">
+      ${ROLES.map(r=>`
+       <div class="role-opt ${adv.role===r.id?'picked':''}" style="--rc:${role.color}" onclick="setRole(${idx},'${r.id}')">${r.name}</div>
+      `).join('')}
+     </div>
+     ${isCustom?`<textarea class="ta" style="height:60px;margin-top:8px;font-size:12px"
+      placeholder="描述这个顾问的角色和说话风格..."
+      oninput="advisors[${idx}].customSys=this.value">${adv.customSys}</textarea>`:''}
+    </div>
+   </div>`;
+ }).join('');
+
+ document.getElementById('addBtn').style.display = advisors.length>=5 ? 'none' : 'flex';
+}
+
+function st(t){ document.getElementById('topic').value=t; }
+
+// ── ENTER CHAT ────────────────────────────────────────
 function enter(){
- uname=document.getElementById('uname').value.trim()||'我';
- urole=document.getElementById('urole').value;
- topic=document.getElementById('topic').value.trim();
- energy=parseInt(document.getElementById('energy').value);
- if(!topic){document.getElementById('topic').focus();return;}
+ uname = document.getElementById('uname').value.trim()||'我';
+ urole = document.getElementById('urole').value;
+ topic = document.getElementById('topic').value.trim();
+ if(!topic){ document.getElementById('topic').focus(); return; }
+ if(advisors.length===0){ alert('请至少添加一位顾问'); return; }
+
  document.getElementById('setup').style.display='none';
  document.getElementById('chat').style.display='flex';
  document.getElementById('htopic').textContent=topic;
- const ac=ga();
- document.getElementById('hpips').innerHTML=`<div class="pip" style="border-color:var(--gold)">${uname[0]}</div>`+ac.map(a=>`<div class="pip" style="border-color:${a.c}">${a.em}</div>`).join('');
- document.getElementById('pills').innerHTML=`<button class="pill active" id="pl-user" style="--c:var(--gold)" onclick="setSp('user')">👤 ${uname}</button>`+ac.map(a=>`<button class="pill" id="pl-${a.id}" style="--c:${a.c}" onclick="setSp('${a.id}')">${a.em} ${a.n}</button>`).join('');
- sys(`讨论室已开启 · ${ac.length+1}位成员`);
+
+ document.getElementById('hpips').innerHTML =
+  `<div class="pip" style="border-color:var(--gold)">${uname[0]}</div>` +
+  advisors.map((adv,i)=>{
+   const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+   return `<div class="pip" style="border-color:${brain.color}">${brain.emoji}</div>`;
+  }).join('');
+
+ document.getElementById('pills').innerHTML =
+  `<button class="pill active" id="pl-user" style="--c:var(--gold)" onclick="setSp('user')">👤 ${uname}</button>` +
+  advisors.map((adv,i)=>{
+   const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+   const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+   return `<button class="pill" id="pl-adv${i}" style="--c:${brain.color}" onclick="setSp('adv${i}')">${brain.emoji} ${role.name}</button>`;
+  }).join('');
+
+ sys(`讨论室已开启 · ${advisors.length+1}位参与者`);
  sys(`议题：${topic}`);
- setTimeout(()=>ait(true),700);
+ setTimeout(()=>allRespond(true),500);
 }
+
 function back(){
- clearTimeout(timer);
  document.getElementById('chat').style.display='none';
  document.getElementById('setup').style.display='flex';
  document.getElementById('msgs').innerHTML='';
- log=[];running=false;paused=false;
+ log=[]; roundNum=0; isTurning=false;
 }
+
+// ── SPEAKER ───────────────────────────────────────────
 function setSp(id){
- sp=id;
+ if(isTurning)return;
+ speaker=id;
  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
  document.getElementById('pl-'+id)?.classList.add('active');
  document.getElementById('mi').focus();
 }
+
+// ── QUEUE BAR ─────────────────────────────────────────
+function renderQueue(queue, currentIdx){
+ const bar = document.getElementById('qbar');
+ if(!queue||queue.length===0){
+  bar.innerHTML=`<div class="qlbl">等待发言...</div>`;return;
+ }
+ let html=`<div class="qlbl">发言顺序</div>`;
+ queue.forEach((advIdx,i)=>{
+  const adv=advisors[advIdx];
+  const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+  const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  const state=i===currentIdx?'now':(i<currentIdx?'done':'');
+  html+=`<div class="qchip ${state}" style="--qc:${brain.color}">${brain.emoji} ${role.name}</div>`;
+ });
+ bar.innerHTML=html;
+}
+
+// ── MESSAGES ──────────────────────────────────────────
 function sys(t){const d=document.createElement('div');d.className='sys';d.textContent=t;document.getElementById('msgs').appendChild(d);sc();}
-function addM(sid,text,rq=null){
- const isMe=sid==='user';
- const a=AG.find(x=>x.id===sid);
- const c=isMe?'var(--gold)':a?.c||'#888';
- const em=isMe?uname[0]:a?.em||'?';
- const nm=isMe?`${uname}（${urole}）`:a?.n||sid;
+function divider(t){const d=document.createElement('div');d.className='divider';d.textContent=t;document.getElementById('msgs').appendChild(d);sc();}
+
+function addMsg(source, text){
+ const isMe = source==='user' || source.startsWith('user-');
+ let c,em,nm,model='';
+ if(isMe){
+  c='var(--gold)';em=uname[0];nm=`${uname}（${urole}）`;
+ } else {
+  const advIdx=parseInt(source.replace('adv',''));
+  const adv=advisors[advIdx];
+  const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+  const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  c=brain.color;em=brain.emoji;nm=role.name;model=brain.name;
+ }
  const g=document.createElement('div');g.className='mg';
  const r=document.createElement('div');r.className='mr'+(isMe?' me':'');r.style.setProperty('--c',c);
- r.innerHTML=`<div class="av" style="border-color:${c};--c:${c}">${em}</div>
+ r.innerHTML=`
+  <div class="av" style="border-color:${c};--c:${c}">${em}</div>
   <div class="bub ${isMe?'me':'ai'}">
-   <div class="bn" style="color:${c}">${nm}</div>
-   ${rq?`<div class="rq" style="border-color:${c};--c:${c}">↩ ${rq}</div>`:''}
+   <div class="bn" style="color:${c}">
+    ${nm}${model?` <span class="mtag" style="--c:${c}">${model}</span>`:''}
+   </div>
    ${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
   </div>`;
  g.appendChild(r);document.getElementById('msgs').appendChild(g);
- log.push({who:nm,id:sid,text,isMe});sc();
+ log.push({who:nm,id:source,text,isMe});sc();
 }
-function addTy(a){
- rmTy();
- const r=document.createElement('div');r.className='tyr';r.id='ty';r.style.setProperty('--c',a.c);
- r.innerHTML=`<div class="av" style="border-color:${a.c};--c:${a.c};opacity:.4">${a.em}</div>
-  <div><div style="font-size:10px;color:${a.c};font-family:'JetBrains Mono',monospace;opacity:.6;margin-bottom:2px">${a.n}</div>
-  <div class="tyb"><span></span><span></span><span></span></div></div>`;
+
+function addTyping(advIdx){
+ rmTyping();
+ const adv=advisors[advIdx];
+ const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+ const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+ const r=document.createElement('div');r.className='tyr';r.id='ty';
+ r.innerHTML=`
+  <div class="av" style="border-color:${brain.color};--c:${brain.color};opacity:.4">${brain.emoji}</div>
+  <div class="tyb">
+   <div class="tyname" style="color:${brain.color}">${role.name} · ${brain.name}</div>
+   <div class="tydots"><span></span><span></span><span></span></div>
+  </div>`;
  document.getElementById('msgs').appendChild(r);sc();
 }
-function rmTy(){document.getElementById('ty')?.remove();}
+function rmTyping(){document.getElementById('ty')?.remove();}
 function sc(){const m=document.getElementById('msgs');m.scrollTop=m.scrollHeight;}
 function sl(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ── SEND ──────────────────────────────────────────────
 async function send(){
  const inp=document.getElementById('mi');
- const text=inp.value.trim();if(!text)return;
- clearTimeout(timer);
- addM(sp,text);inp.value='';inp.style.height='auto';
- await sl(600);ait(false,text);
+ const text=inp.value.trim();
+ if(!text||isTurning)return;
+ const src = speaker==='user'?'user':`user-via-${speaker}`;
+ addMsg('user',text);
+ inp.value='';inp.style.height='auto';
+ await sl(400);
+ await allRespond(false);
 }
-async function ait(opening=false,trigger=null){
- if(paused||running)return;
- running=true;setSt('thinking');
- const ac=ga();
- const count=opening?Math.min(2,ac.length):1+(Math.random()<.35?1:0);
- const lastId=log.length>0?log[log.length-1].id:null;
- const pool=ac.filter(a=>a.id!==lastId);
- const picks=[...(pool.length>0?pool:ac)].sort(()=>Math.random()-.5).slice(0,Math.min(count,ac.length));
+
+// ── CORE: ALL ADVISORS RESPOND IN ORDER ───────────────
+async function allRespond(isOpening=false){
+ if(isTurning)return;
+ isTurning=true;
+ roundNum++;
+ document.getElementById('sb').disabled=true;
+
+ const queue=advisors.map((_,i)=>i);
+ renderQueue(queue,0);
+ divider(isOpening?`— 第 ${roundNum} 轮 · 开场表态 —`:`— 第 ${roundNum} 轮 · 顾问回应 —`);
+ setHint('顾问们正在逐一回应...');
+
  const recent=log.slice(-10).map(m=>`【${m.who}】${m.text}`).join('\n');
- const plist=[`${uname}（${urole}）`,...ac.map(a=>a.n)].join('、');
- for(const a of picks){
-  if(paused)break;
-  addTy(a);await sl(500+Math.random()*700);
-  const lastOther=log.filter(m=>!m.isMe&&m.id!==a.id).slice(-1)[0];
-  const lastMe=log.filter(m=>m.isMe).slice(-1)[0];
-  const refMsg=lastMe||lastOther;
-  const prompt=opening
-   ?`议题：${topic}\n参与者：${plist}\n你是第一个发言，给出最犀利的初始判断，不废话。${EP[energy]}100-150字。`
-   :`议题：${topic}\n参与者：${plist}\n\n最近讨论：\n${recent}\n\n${trigger?`最新：【${log[log.length-1]?.who}】${trigger}\n\n`:''}针对上面给出你的回应，要有具体观点，可以同意/反驳/追问，可以@某人。${EP[energy]}100-150字。`;
+ const plist=[`${uname}（${urole}）`,...advisors.map((adv,i)=>{
+  const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  const brain=BRAINS.find(b=>b.id===adv.brain)||BRAINS[0];
+  return `${role.name}（${brain.name}）`;
+ })].join('、');
+
+ for(let i=0;i<advisors.length;i++){
+  const adv=advisors[i];
+  const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  renderQueue(queue,i);
+  addTyping(i);
+  await sl(400+Math.random()*300);
+
+  const sys = adv.role==='custom'
+   ? (adv.customSys||'你是一位顾问，参与商业讨论，给出有价值的建议。100-150字。')
+   : role.sys;
+
+  const prompt = isOpening
+   ? `这是讨论开场。\n议题：${topic}\n参与者：${plist}\n\n给出你对这个议题的第一判断，最重要的机会或最大的风险是什么？`
+   : `议题：${topic}\n参与者：${plist}\n\n讨论记录：\n${recent}\n\n针对上面的讨论，从你的角度给出回应。同意就补充理由，不同意就给出你的替代判断。目标是帮用户把方向想清楚。`;
+
   try{
-   const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:a.sys,messages:[{role:'user',content:prompt}]})});
-   const data=await res.json();rmTy();
-   if(data.text){
-    const rq=refMsg&&data.text.includes('@')?refMsg.text.slice(0,40)+'…':null;
-    addM(a.id,data.text,rq);
-   }
-  }catch(e){rmTy();addM(a.id,'（网络错误，请重试）');}
-  await sl(400);
+   const res=await fetch('/api/chat',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:adv.brain,system:sys,messages:[{role:'user',content:prompt}]})
+   });
+   const data=await res.json();
+   rmTyping();
+   addMsg(`adv${i}`,data.text||'（无回应）');
+  }catch(e){
+   rmTyping();
+   addMsg(`adv${i}`,'（网络错误，请重试）');
+  }
+  await sl(200);
  }
- running=false;setSt('live');
- if(!paused){timer=setTimeout(()=>ait(false),9000+Math.random()*7000);}
+
+ // Spontaneous extra (30%)
+ if(!isOpening&&Math.random()<0.3&&advisors.length>1){
+  const bonusIdx=Math.floor(Math.random()*advisors.length);
+  const adv=advisors[bonusIdx];
+  const role=ROLES.find(r=>r.id===adv.role)||ROLES[0];
+  const sys=adv.role==='custom'?(adv.customSys||'你是一位顾问。'):`${role.sys}`;
+  const bonusLog=log.slice(-6).map(m=>`【${m.who}】${m.text}`).join('\n');
+  await sl(600);
+  addTyping(bonusIdx);
+  await sl(400+Math.random()*400);
+  try{
+   const res=await fetch('/api/chat',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:adv.brain,system:sys,
+     messages:[{role:'user',content:`议题：${topic}\n\n刚才讨论：\n${bonusLog}\n\n你有一个关键补充——一个被所有人忽略的点，或者对某人观点的直接回应。50字以内，直接说。`}]
+    })
+   });
+   const data=await res.json();
+   rmTyping();
+   if(data.text)addMsg(`adv${bonusIdx}`,`💬 ${data.text}`);
+  }catch(e){rmTyping();}
+ }
+
+ renderQueue([],0);
+ isTurning=false;
+ document.getElementById('sb').disabled=false;
+ setHint('所有人已表态 · 轮到你说话了');
 }
-function togglePause(){
- paused=!paused;
- const b=document.getElementById('pbtn');
- if(paused){clearTimeout(timer);b.textContent='▶ 继续';setSt('paused');}
- else{b.textContent='⏸ 暂停';setSt('live');setTimeout(()=>ait(false),1000);}
-}
-function setSt(s){
- const d=document.getElementById('sdot'),t=document.getElementById('stxt');
- if(s==='live'){d.className='sdot live';t.textContent='讨论进行中';}
- else if(s==='thinking'){d.className='sdot live';t.textContent='顾问思考中...';}
- else{d.className='sdot';t.textContent='已暂停';}
-}
-ig();
+
+function setHint(t){document.getElementById('hint').textContent=t;}
+
+// ── INIT ─────────────────────────────────────────────
+addAdvisor();
+addAdvisor();
+addAdvisor();
 </script>
 </body>
 </html>
