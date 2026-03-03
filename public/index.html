@@ -3,314 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>圆桌 · 混合讨论室</title>
+<title>圆桌 · 自由讨论室</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0e0e14; --surface:#16161f; --surface2:#1e1e2a;
-  --border:#2a2a3a; --text:#e8e8f0; --muted:#5a5a7a;
-  --gold:#e8b84b; --gold-dim:#2a2210;
-}
+:root{--bg:#0e0e14;--sf:#15151e;--s2:#1c1c28;--bd:#28283a;--tx:#ddddf0;--mt:#52527a;--gold:#e8b84b;--gbg:#1e1a0a;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Serif SC',serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-
-/* SETUP */
-#setupScreen{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 30% 50%,#1a1a2e,var(--bg) 70%);}
-.setup-box{width:100%;max-width:660px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;max-height:90vh;overflow-y:auto;}
-.setup-box::-webkit-scrollbar{width:4px;}
-.setup-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.logo{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:4px;color:var(--gold);margin-bottom:6px;}
-.setup-title{font-size:26px;font-weight:700;margin-bottom:6px;}
-.setup-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
-.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;margin-top:20px;}
-.identity-row{display:flex;gap:8px;}
-.identity-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;}
-.identity-input:focus{border-color:var(--gold);}
-.role-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Noto Serif SC',serif;font-size:13px;color:var(--text);outline:none;cursor:pointer;}
-.agents-grid{display:flex;flex-direction:column;gap:7px;}
-.agent-card{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;}
-.agent-card:hover{border-color:var(--agent-color);}
-.agent-card.on{border-color:var(--agent-color);background:color-mix(in srgb,var(--agent-color) 8%,var(--surface2));}
-.check-circle{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
-.agent-card.on .check-circle{background:var(--agent-color);border-color:var(--agent-color);color:#000;}
-.agent-emoji{font-size:17px;flex-shrink:0;}
-.agent-card-name{font-size:13px;font-weight:600;}
-.agent-card-desc{font-size:11px;color:var(--muted);margin-top:1px;}
-.topic-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--text);resize:none;outline:none;height:76px;line-height:1.6;transition:border-color .2s;}
-.topic-input:focus{border-color:var(--gold);}
-.quick-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.qtag{font-size:12px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;transition:all .2s;}
-.qtag:hover{border-color:var(--gold);color:var(--gold);}
-.enter-btn{width:100%;margin-top:22px;padding:14px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;}
-.enter-btn:hover{background:#f0c45a;}
-.enter-btn:disabled{opacity:.4;cursor:not-allowed;}
-
-/* CHAT */
-#chatScreen{flex:1;display:none;flex-direction:column;overflow:hidden;}
-.chat-header{padding:12px 18px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
-.topic-display{font-size:13px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.back-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;flex-shrink:0;}
-.back-btn:hover{border-color:var(--gold);color:var(--gold);}
-.member-pips{display:flex;}
-.pip{width:26px;height:26px;border-radius:50%;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;margin-left:-5px;background:var(--surface2);}
-
-.messages{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:2px;}
-.messages::-webkit-scrollbar{width:4px;}
-.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-
-.msg-group{margin-bottom:14px;}
-.msg-row{display:flex;gap:10px;align-items:flex-end;}
-.msg-row.me{flex-direction:row-reverse;}
-.av{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--c);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:color-mix(in srgb,var(--c) 12%,var(--surface));}
-.bubble{max-width:70%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.7;color:var(--text);animation:pop .2s ease;}
-.bubble.ai{background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:3px;}
-.bubble.me{background:var(--gold-dim);border:1px solid var(--gold);border-bottom-right-radius:3px;color:var(--gold);}
-@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-.bubble-name{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;margin-bottom:4px;}
-.bubble strong{color:#fff;}
-.sys{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding:6px 0;letter-spacing:1px;}
-.typing-row{display:flex;gap:10px;align-items:center;margin-bottom:6px;}
-.typing-bub{background:var(--surface2);border:1px solid var(--border);padding:9px 14px;border-radius:14px;border-bottom-left-radius:3px;display:inline-flex;gap:4px;align-items:center;}
-.typing-bub span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:bop 1.2s infinite;}
-.typing-bub span:nth-child(2){animation-delay:.2s;}
-.typing-bub span:nth-child(3){animation-delay:.4s;}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Serif SC',serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+#setup{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 40% 40%,#181828,var(--bg) 65%);}
+.box{width:100%;max-width:640px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:30px;max-height:92vh;overflow-y:auto;}
+.box::-webkit-scrollbar{width:3px;}.box::-webkit-scrollbar-thumb{background:var(--bd);}
+.brand{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--gold);margin-bottom:8px;}
+.h1{font-size:24px;font-weight:700;margin-bottom:5px;}
+.sub{font-size:13px;color:var(--mt);line-height:1.6;margin-bottom:22px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mt);text-transform:uppercase;margin:18px 0 8px;}
+.row{display:flex;gap:8px;}
+.inp{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);outline:none;transition:border-color .2s;}
+.inp:focus{border-color:var(--gold);}
+.sel{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-family:'Noto Serif SC',serif;font-size:13px;color:var(--tx);outline:none;cursor:pointer;}
+.grid{display:flex;flex-direction:column;gap:7px;}
+.acard{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;transition:all .2s;user-select:none;}
+.acard:hover{border-color:var(--ac);}
+.acard.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 9%,var(--s2));}
+.chk{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .2s;}
+.acard.on .chk{background:var(--ac);border-color:var(--ac);color:#000;}
+.aem{font-size:17px;flex-shrink:0;}
+.aname{font-size:13px;font-weight:600;}
+.adesc{font-size:11px;color:var(--mt);margin-top:1px;}
+.ta{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);resize:none;outline:none;height:74px;line-height:1.6;transition:border-color .2s;}
+.ta:focus{border-color:var(--gold);}
+.qtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+.qt{font-size:11px;padding:4px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;color:var(--mt);cursor:pointer;transition:all .2s;}
+.qt:hover{border-color:var(--gold);color:var(--gold);}
+.srow{display:flex;align-items:center;gap:12px;margin-top:4px;}
+.slider{flex:1;accent-color:var(--gold);}
+.slbls{display:flex;justify-content:space-between;font-size:11px;color:var(--mt);margin-top:3px;}
+.go{width:100%;margin-top:22px;padding:13px;background:var(--gold);color:#000;border:none;border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s;}
+.go:hover{background:#f0c45a;}.go:disabled{opacity:.4;cursor:not-allowed;}
+#chat{flex:1;display:none;flex-direction:column;overflow:hidden;}
+.topbar{padding:11px 18px;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;}
+.topictl{font-size:13px;color:var(--mt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pips{display:flex;}
+.pip{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;margin-left:-4px;background:var(--s2);}
+.backbtn{background:none;border:1px solid var(--bd);color:var(--mt);padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;flex-shrink:0;}
+.backbtn:hover{border-color:var(--gold);color:var(--gold);}
+.sbar{padding:5px 18px;background:var(--s2);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;min-height:28px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--mt);flex-shrink:0;}
+.sdot.live{background:#4ec9b0;box-shadow:0 0 6px #4ec9b030;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.stxt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:.5px;}
+.pbtn{margin-left:auto;background:none;border:1px solid var(--bd);color:var(--mt);padding:3px 10px;border-radius:4px;font-size:11px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;flex-shrink:0;}
+.pbtn:hover{border-color:var(--gold);color:var(--gold);}
+.msgs{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:2px;}
+.msgs::-webkit-scrollbar{width:3px;}.msgs::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+.sys{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);padding:5px 0;letter-spacing:1px;margin:4px 0;}
+.mg{margin-bottom:12px;}
+.mr{display:flex;gap:9px;align-items:flex-end;}
+.mr.me{flex-direction:row-reverse;}
+.av{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--c);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;background:color-mix(in srgb,var(--c) 12%,var(--s2));}
+.bub{max-width:72%;padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.75;color:var(--tx);animation:pop .2s ease;}
+.bub.ai{background:var(--s2);border:1px solid var(--bd);border-bottom-left-radius:3px;}
+.bub.me{background:var(--gbg);border:1px solid var(--gold);border-bottom-right-radius:3px;color:var(--gold);}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.bn{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;margin-bottom:4px;}
+.bub strong{color:#fff;}
+.rq{font-size:11px;color:var(--mt);padding:4px 8px;border-left:2px solid var(--c);border-radius:3px;background:color-mix(in srgb,var(--c) 8%,transparent);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tyr{display:flex;gap:9px;align-items:center;margin-bottom:8px;}
+.tyb{background:var(--s2);border:1px solid var(--bd);padding:9px 13px;border-radius:14px;border-bottom-left-radius:3px;display:inline-flex;gap:4px;align-items:center;}
+.tyb span{width:5px;height:5px;border-radius:50%;background:var(--mt);animation:bop 1.2s infinite;}
+.tyb span:nth-child(2){animation-delay:.2s;}.tyb span:nth-child(3){animation-delay:.4s;}
 @keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
-
-/* INPUT */
-.input-area{padding:14px 18px;background:var(--surface);border-top:1px solid var(--border);}
-.speaker-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
-.pill{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;background:transparent;font-family:'Noto Serif SC',serif;color:var(--muted);transition:all .2s;}
+.ia{padding:13px 18px;background:var(--sf);border-top:1px solid var(--bd);}
+.spkl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mt);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
+.pill{font-size:12px;padding:4px 11px;border-radius:20px;border:1px solid var(--bd);cursor:pointer;background:transparent;font-family:'Noto Serif SC',serif;color:var(--mt);transition:all .2s;}
 .pill.active{background:var(--c);border-color:var(--c);color:#000;font-weight:600;}
 .pill:hover:not(.active){border-color:var(--c);color:var(--c);}
-.input-row{display:flex;gap:8px;align-items:flex-end;}
-.msg-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--text);outline:none;resize:none;line-height:1.5;max-height:100px;transition:border-color .2s;}
-.msg-input:focus{border-color:var(--gold);}
-.msg-input::placeholder{color:var(--muted);}
-.ai-btn{padding:9px 14px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Serif SC',serif;transition:all .2s;white-space:nowrap;flex-shrink:0;}
-.ai-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
-.ai-btn:disabled{opacity:.3;cursor:not-allowed;}
-.send-btn{width:40px;height:40px;background:var(--gold);border:none;border-radius:10px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
-.send-btn:hover{background:#f0c45a;}
-.send-btn:disabled{opacity:.4;cursor:not-allowed;}
+.ir{display:flex;gap:8px;align-items:flex-end;}
+.mi{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;font-family:'Noto Serif SC',serif;font-size:14px;color:var(--tx);outline:none;resize:none;line-height:1.5;max-height:100px;transition:border-color .2s;}
+.mi:focus{border-color:var(--gold);}.mi::placeholder{color:var(--mt);}
+.sb{width:40px;height:40px;background:var(--gold);border:none;border-radius:10px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.sb:hover{background:#f0c45a;}.sb:disabled{opacity:.4;cursor:not-allowed;}
 </style>
 </head>
 <body>
-
-<!-- SETUP -->
-<div id="setupScreen">
- <div class="setup-box">
-  <div class="logo">圆桌 // Roundtable</div>
-  <div class="setup-title">组建你的讨论小组</div>
-  <div class="setup-sub">你不是观众，你是参与者。选好顾问，设定角色，一起讨论——AI会回应你，也会互相争论。</div>
-
-  <div class="section-label">你是谁</div>
-  <div class="identity-row">
-   <input class="identity-input" id="userName" placeholder="你的名字" value="我">
-   <select class="role-select" id="userRole">
-    <option>创始人</option><option>产品经理</option><option>投资人</option>
-    <option>开发者</option><option>运营</option><option>学生</option>
-   </select>
+<div id="setup">
+ <div class="box">
+  <div class="brand">圆桌 // Roundtable</div>
+  <div class="h1">自由讨论室</div>
+  <div class="sub">AI顾问之间会自己争起来，不等你发话。你随时可以插话，他们会回应你，也会继续互相辩论。</div>
+  <div class="lbl">你是谁</div>
+  <div class="row">
+   <input class="inp" id="uname" placeholder="你的名字" value="我">
+   <select class="sel" id="urole"><option>创始人</option><option>产品经理</option><option>投资人</option><option>开发者</option><option>运营</option><option>学生</option></select>
   </div>
-
-  <div class="section-label">选择AI顾问（至少1位）</div>
-  <div class="agents-grid" id="agentsGrid"></div>
-
-  <div class="section-label">讨论议题</div>
-  <textarea class="topic-input" id="topicInput" placeholder="你想讨论什么？输入你的商业问题或项目想法..."></textarea>
-  <div class="quick-tags">
-   <span class="qtag" onclick="setTopic('AI圆桌讨论平台，多模型协作，订阅制，面向创业者')">AI圆桌平台</span>
-   <span class="qtag" onclick="setTopic('一人公司做SaaS产品，如何冷启动找到第一批付费用户')">一人公司SaaS</span>
-   <span class="qtag" onclick="setTopic('AI App分发平台，类似Hao123+Steam，个人开发者生态')">App分发市场</span>
-   <span class="qtag" onclick="setTopic('缠论AI交易助手，面向A股散户，订阅制，如何突破合规障碍')">缠论交易助手</span>
+  <div class="lbl">选AI顾问（建议2-4位）</div>
+  <div class="grid" id="grid"></div>
+  <div class="lbl">讨论议题</div>
+  <textarea class="ta" id="topic" placeholder="输入你想讨论的商业问题或项目..."></textarea>
+  <div class="qtags">
+   <span class="qt" onclick="st('AI圆桌讨论平台，多模型协作，订阅制，面向创业者')">AI圆桌平台</span>
+   <span class="qt" onclick="st('一人公司做SaaS，如何找到第一批付费用户')">一人公司SaaS</span>
+   <span class="qt" onclick="st('AI App分发平台，类似Hao123+Steam，服务个人开发者')">App分发市场</span>
+   <span class="qt" onclick="st('缠论AI交易助手，A股散户，订阅制，如何突破合规和冷启动')">缠论助手</span>
   </div>
-
-  <button class="enter-btn" id="enterBtn" onclick="enterChat()">进入讨论室 →</button>
+  <div class="lbl">讨论激烈程度</div>
+  <div class="srow">
+   <span style="font-size:12px;color:var(--mt)">理性</span>
+   <input class="slider" type="range" id="energy" min="1" max="3" value="2">
+   <span style="font-size:12px;color:var(--mt)">激烈</span>
+  </div>
+  <div class="slbls"><span>克制分析</span><span>正常讨论</span><span>针锋相对</span></div>
+  <button class="go" onclick="enter()">进入讨论室 →</button>
  </div>
 </div>
-
-<!-- CHAT -->
-<div id="chatScreen">
- <div class="chat-header">
-  <button class="back-btn" onclick="backToSetup()">← 重设</button>
-  <div class="topic-display" id="headerTopic"></div>
-  <div class="member-pips" id="memberPips"></div>
+<div id="chat">
+ <div class="topbar">
+  <button class="backbtn" onclick="back()">← 重设</button>
+  <div class="topictl" id="htopic"></div>
+  <div class="pips" id="hpips"></div>
  </div>
- <div class="messages" id="messages"></div>
- <div class="input-area">
-  <div class="speaker-label">以谁的身份发言</div>
+ <div class="sbar">
+  <div class="sdot live" id="sdot"></div>
+  <div class="stxt" id="stxt">讨论进行中</div>
+  <button class="pbtn" id="pbtn" onclick="togglePause()">⏸ 暂停</button>
+ </div>
+ <div class="msgs" id="msgs"></div>
+ <div class="ia">
+  <div class="spkl">以谁的身份发言</div>
   <div class="pills" id="pills"></div>
-  <div class="input-row">
-   <textarea class="msg-input" id="msgInput" placeholder="输入你的观点，按 Enter 发送..." rows="1"
+  <div class="ir">
+   <textarea class="mi" id="mi" placeholder="随时插话，按 Enter 发送..." rows="1"
     onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
     oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
-   <button class="ai-btn" id="aiBtn" onclick="aiRespond()">💬 AI回应</button>
-   <button class="send-btn" id="sendBtn" onclick="send()">↑</button>
+   <button class="sb" onclick="send()">↑</button>
   </div>
  </div>
 </div>
-
 <script>
-const AGENTS = [
- {id:'strategist',name:'战略顾问',emoji:'🎯',color:'#e8b84b',desc:'商业模式·市场定位·竞争分析',
-  sys:'你是顶级商业战略顾问，在一个群组讨论中。思维犀利，不捧场，直接说真实判断。会针对任何人的发言给出战略视角。150字以内。'},
- {id:'growth',name:'增长黑客',emoji:'🚀',color:'#4ec9b0',desc:'获客·留存·病毒传播',
-  sys:'你是增长黑客，在一个群组讨论中。专注用户获取和变现，关注PMF。针对发言给出增长视角，不捧场。150字以内。'},
- {id:'investor',name:'风投顾问',emoji:'💰',color:'#569cd6',desc:'估值·融资·商业模式',
-  sys:'你是经验丰富的VC，在一个群组讨论中。从投资角度评估，关注市场规模和护城河，敢于直接质疑。150字以内。'},
- {id:'operator',name:'运营专家',emoji:'⚙️',color:'#c586c0',desc:'执行·用户体验·落地细节',
-  sys:'你是产品运营专家，在一个群组讨论中。关注执行细节，发现理想化方案的坑，提供务实建议。150字以内。'},
- {id:'devil',name:'魔鬼代言',emoji:'😈',color:'#f44747',desc:'挑战假设·找漏洞·反向思考',
-  sys:'你是魔鬼代言人，在一个群组讨论中。专门找最新发言的盲点和假设漏洞，尖锐直接，不留情面。150字以内。'},
+const AG=[
+ {id:'S',n:'战略顾问',em:'🎯',c:'#e8b84b',d:'商业模式·市场定位·竞争策略',
+  sys:'你是战略顾问，在商业讨论群组里。有鲜明观点，会直接反驳任何人。用第一人称，偶尔@对方。'},
+ {id:'G',n:'增长黑客',em:'🚀',c:'#4ec9b0',d:'获客·留存·PMF验证',
+  sys:'你是增长黑客，在商业讨论群组里。只关心数据和可执行路径，对空话没耐心。用第一人称，偶尔@对方。'},
+ {id:'V',n:'风投视角',em:'💰',c:'#569cd6',d:'投资逻辑·估值·护城河',
+  sys:'你是VC，在商业讨论群组里。从资本视角切入，关心市场规模和退出，敢泼冷水。用第一人称，偶尔@对方。'},
+ {id:'O',n:'运营专家',em:'⚙️',c:'#c586c0',d:'执行·用户体验·落地',
+  sys:'你是运营专家，在商业讨论群组里。专挑执行层面的漏洞，烦空谈。用第一人称，偶尔@对方。'},
+ {id:'D',n:'魔鬼代言',em:'😈',c:'#f44747',d:'挑战假设·找盲点·反向思考',
+  sys:'你是魔鬼代言人，在商业讨论群组里。专门找最新发言的最大漏洞，不留情面但有逻辑。用第一人称，偶尔@对方。'},
 ];
-
-let selected = ['strategist','devil'];
-let speaker = 'user';
-let thinking = false;
-let history = [];
-let uName='我', uRole='创始人', topic='';
-
-function initGrid(){
- document.getElementById('agentsGrid').innerHTML = AGENTS.map(a=>`
-  <div class="agent-card ${selected.includes(a.id)?'on':''}" id="c-${a.id}" style="--agent-color:${a.color}" onclick="toggle('${a.id}')">
-   <div class="check-circle">${selected.includes(a.id)?'✓':''}</div>
-   <div class="agent-emoji">${a.emoji}</div>
-   <div><div class="agent-card-name" style="color:${selected.includes(a.id)?a.color:'var(--text)'}">${a.name}</div><div class="agent-card-desc">${a.desc}</div></div>
+const EP={1:'风格克制理性，多用数据。',2:'风格直接，有话直说。',3:'风格针锋相对，遇不同意见直接反驳。'};
+let sel=['S','D','G'],sp='user',paused=false,running=false,log=[],uname='我',urole='创始人',topic='',energy=2,timer=null;
+function ga(){return AG.filter(a=>sel.includes(a.id));}
+function ig(){
+ document.getElementById('grid').innerHTML=AG.map(a=>`
+  <div class="acard ${sel.includes(a.id)?'on':''}" style="--ac:${a.c}" onclick="tog('${a.id}')">
+   <div class="chk">${sel.includes(a.id)?'✓':''}</div>
+   <div class="aem">${a.em}</div>
+   <div><div class="aname" style="color:${sel.includes(a.id)?a.c:'var(--tx)'}">${a.n}</div><div class="adesc">${a.d}</div></div>
   </div>`).join('');
 }
-
-function toggle(id){
- if(selected.includes(id)){if(selected.length<=1)return;selected=selected.filter(x=>x!==id);}
- else selected.push(id);
- initGrid();
+function tog(id){
+ if(sel.includes(id)){if(sel.length<=1)return;sel=sel.filter(x=>x!==id);}else sel.push(id);ig();
 }
-
-function setTopic(t){document.getElementById('topicInput').value=t;}
-
-function getActive(){return AGENTS.filter(a=>selected.includes(a.id));}
-
-function enterChat(){
- uName=document.getElementById('userName').value.trim()||'我';
- uRole=document.getElementById('userRole').value;
- topic=document.getElementById('topicInput').value.trim();
- if(!topic){document.getElementById('topicInput').focus();return;}
-
- document.getElementById('setupScreen').style.display='none';
- document.getElementById('chatScreen').style.display='flex';
- document.getElementById('headerTopic').textContent=topic;
-
- // member pips
- document.getElementById('memberPips').innerHTML=
-  `<div class="pip" style="border-color:var(--gold)">${uName[0]}</div>`+
-  getActive().map(a=>`<div class="pip" style="border-color:${a.color}">${a.emoji}</div>`).join('');
-
- // pills
- document.getElementById('pills').innerHTML=
-  `<button class="pill active" id="p-user" style="--c:var(--gold)" onclick="setSpeaker('user')">👤 ${uName}</button>`+
-  getActive().map(a=>`<button class="pill" id="p-${a.id}" style="--c:${a.color}" onclick="setSpeaker('${a.id}')">${a.emoji} ${a.name}</button>`).join('');
-
- addSys(`讨论室已开启 · ${getActive().length+1}位参与者`);
- addSys(`议题：${topic}`);
-
- // First AI opens discussion
- setTimeout(()=>aiRespond(true),700);
+function st(t){document.getElementById('topic').value=t;}
+function enter(){
+ uname=document.getElementById('uname').value.trim()||'我';
+ urole=document.getElementById('urole').value;
+ topic=document.getElementById('topic').value.trim();
+ energy=parseInt(document.getElementById('energy').value);
+ if(!topic){document.getElementById('topic').focus();return;}
+ document.getElementById('setup').style.display='none';
+ document.getElementById('chat').style.display='flex';
+ document.getElementById('htopic').textContent=topic;
+ const ac=ga();
+ document.getElementById('hpips').innerHTML=`<div class="pip" style="border-color:var(--gold)">${uname[0]}</div>`+ac.map(a=>`<div class="pip" style="border-color:${a.c}">${a.em}</div>`).join('');
+ document.getElementById('pills').innerHTML=`<button class="pill active" id="pl-user" style="--c:var(--gold)" onclick="setSp('user')">👤 ${uname}</button>`+ac.map(a=>`<button class="pill" id="pl-${a.id}" style="--c:${a.c}" onclick="setSp('${a.id}')">${a.em} ${a.n}</button>`).join('');
+ sys(`讨论室已开启 · ${ac.length+1}位成员`);
+ sys(`议题：${topic}`);
+ setTimeout(()=>ait(true),700);
 }
-
-function backToSetup(){
- document.getElementById('chatScreen').style.display='none';
- document.getElementById('setupScreen').style.display='flex';
- document.getElementById('messages').innerHTML='';
- history=[];
+function back(){
+ clearTimeout(timer);
+ document.getElementById('chat').style.display='none';
+ document.getElementById('setup').style.display='flex';
+ document.getElementById('msgs').innerHTML='';
+ log=[];running=false;paused=false;
 }
-
-function setSpeaker(id){
- speaker=id;
+function setSp(id){
+ sp=id;
  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
- document.getElementById(`p-${id}`)?.classList.add('active');
- document.getElementById('msgInput').focus();
+ document.getElementById('pl-'+id)?.classList.add('active');
+ document.getElementById('mi').focus();
 }
-
-function addSys(t){
- const d=document.createElement('div');d.className='sys';d.textContent=t;
- document.getElementById('messages').appendChild(d);scroll();
-}
-
-function addMsg(speakerId,text){
- const isMe=speakerId==='user';
- const a=AGENTS.find(x=>x.id===speakerId);
- const c=isMe?'var(--gold)':a?.color||'#888';
- const em=isMe?uName[0]:a?.emoji||'?';
- const nm=isMe?`${uName} · ${uRole}`:a?.name||speakerId;
-
- const g=document.createElement('div');g.className='msg-group';
- const row=document.createElement('div');row.className=`msg-row${isMe?' me':''}`;
- row.style.setProperty('--c',c);
- row.innerHTML=`
-  <div class="av" style="border-color:${c};--c:${c}">${em}</div>
-  <div class="bubble ${isMe?'me':'ai'}">
-   <div class="bubble-name" style="color:${c}">${nm}</div>
+function sys(t){const d=document.createElement('div');d.className='sys';d.textContent=t;document.getElementById('msgs').appendChild(d);sc();}
+function addM(sid,text,rq=null){
+ const isMe=sid==='user';
+ const a=AG.find(x=>x.id===sid);
+ const c=isMe?'var(--gold)':a?.c||'#888';
+ const em=isMe?uname[0]:a?.em||'?';
+ const nm=isMe?`${uname}（${urole}）`:a?.n||sid;
+ const g=document.createElement('div');g.className='mg';
+ const r=document.createElement('div');r.className='mr'+(isMe?' me':'');r.style.setProperty('--c',c);
+ r.innerHTML=`<div class="av" style="border-color:${c};--c:${c}">${em}</div>
+  <div class="bub ${isMe?'me':'ai'}">
+   <div class="bn" style="color:${c}">${nm}</div>
+   ${rq?`<div class="rq" style="border-color:${c};--c:${c}">↩ ${rq}</div>`:''}
    ${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
   </div>`;
- g.appendChild(row);
- document.getElementById('messages').appendChild(g);
- history.push({who:nm,text,isMe});
- scroll();
+ g.appendChild(r);document.getElementById('msgs').appendChild(g);
+ log.push({who:nm,id:sid,text,isMe});sc();
 }
-
-function addTyping(a){
- const row=document.createElement('div');row.className='typing-row';row.id='typing';
- row.innerHTML=`<div class="av" style="border-color:${a.color};--c:${a.color};opacity:.5">${a.emoji}</div><div class="typing-bub"><span></span><span></span><span></span></div>`;
- document.getElementById('messages').appendChild(row);scroll();
+function addTy(a){
+ rmTy();
+ const r=document.createElement('div');r.className='tyr';r.id='ty';r.style.setProperty('--c',a.c);
+ r.innerHTML=`<div class="av" style="border-color:${a.c};--c:${a.c};opacity:.4">${a.em}</div>
+  <div><div style="font-size:10px;color:${a.c};font-family:'JetBrains Mono',monospace;opacity:.6;margin-bottom:2px">${a.n}</div>
+  <div class="tyb"><span></span><span></span><span></span></div></div>`;
+ document.getElementById('msgs').appendChild(r);sc();
 }
-function removeTyping(){document.getElementById('typing')?.remove();}
-
-function scroll(){const m=document.getElementById('messages');m.scrollTop=m.scrollHeight;}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-
+function rmTy(){document.getElementById('ty')?.remove();}
+function sc(){const m=document.getElementById('msgs');m.scrollTop=m.scrollHeight;}
+function sl(ms){return new Promise(r=>setTimeout(r,ms));}
 async function send(){
- const input=document.getElementById('msgInput');
- const text=input.value.trim();
- if(!text||thinking)return;
- addMsg(speaker,text);
- input.value='';input.style.height='auto';
- if(speaker==='user') setTimeout(()=>aiRespond(),600);
+ const inp=document.getElementById('mi');
+ const text=inp.value.trim();if(!text)return;
+ clearTimeout(timer);
+ addM(sp,text);inp.value='';inp.style.height='auto';
+ await sl(600);ait(false,text);
 }
-
-async function aiRespond(opening=false){
- if(thinking)return;
- thinking=true;
- document.getElementById('aiBtn').disabled=true;
- document.getElementById('sendBtn').disabled=true;
-
- const active=getActive();
- // 1 or 2 agents respond naturally
- const count=opening?Math.min(2,active.length):1+Math.floor(Math.random()*Math.min(2,active.length));
- const picks=[...active].sort(()=>Math.random()-.5).slice(0,count);
-
- const histText=history.slice(-8).map(m=>`【${m.who}】${m.text}`).join('\n');
- const ctx=opening
-  ?`这是一个商业决策讨论群组。\n议题：${topic}\n参与者：${uName}（${uRole}）+ AI顾问们。\n请开启讨论，说出你对这个议题的第一判断，不要客套。`
-  :`这是一个商业决策讨论群组。\n议题：${topic}\n\n最近的讨论记录：\n${histText}\n\n请自然地回应最新的发言，可以同意/反驳/补充/追问。不要重复别人说过的内容。`;
-
+async function ait(opening=false,trigger=null){
+ if(paused||running)return;
+ running=true;setSt('thinking');
+ const ac=ga();
+ const count=opening?Math.min(2,ac.length):1+(Math.random()<.35?1:0);
+ const lastId=log.length>0?log[log.length-1].id:null;
+ const pool=ac.filter(a=>a.id!==lastId);
+ const picks=[...(pool.length>0?pool:ac)].sort(()=>Math.random()-.5).slice(0,Math.min(count,ac.length));
+ const recent=log.slice(-10).map(m=>`【${m.who}】${m.text}`).join('\n');
+ const plist=[`${uname}（${urole}）`,...ac.map(a=>a.n)].join('、');
  for(const a of picks){
-  addTyping(a);
-  await sleep(500+Math.random()*500);
+  if(paused)break;
+  addTy(a);await sl(500+Math.random()*700);
+  const lastOther=log.filter(m=>!m.isMe&&m.id!==a.id).slice(-1)[0];
+  const lastMe=log.filter(m=>m.isMe).slice(-1)[0];
+  const refMsg=lastMe||lastOther;
+  const prompt=opening
+   ?`议题：${topic}\n参与者：${plist}\n你是第一个发言，给出最犀利的初始判断，不废话。${EP[energy]}100-150字。`
+   :`议题：${topic}\n参与者：${plist}\n\n最近讨论：\n${recent}\n\n${trigger?`最新：【${log[log.length-1]?.who}】${trigger}\n\n`:''}针对上面给出你的回应，要有具体观点，可以同意/反驳/追问，可以@某人。${EP[energy]}100-150字。`;
   try{
-   const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({system:a.sys,messages:[{role:'user',content:ctx}]})});
-   const data=await res.json();
-   removeTyping();
-   if(data.text)addMsg(a.id,data.text);
-  }catch(e){removeTyping();addMsg(a.id,'（网络错误，请重试）');}
-  await sleep(300);
+   const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:a.sys,messages:[{role:'user',content:prompt}]})});
+   const data=await res.json();rmTy();
+   if(data.text){
+    const rq=refMsg&&data.text.includes('@')?refMsg.text.slice(0,40)+'…':null;
+    addM(a.id,data.text,rq);
+   }
+  }catch(e){rmTy();addM(a.id,'（网络错误，请重试）');}
+  await sl(400);
  }
-
- thinking=false;
- document.getElementById('aiBtn').disabled=false;
- document.getElementById('sendBtn').disabled=false;
+ running=false;setSt('live');
+ if(!paused){timer=setTimeout(()=>ait(false),9000+Math.random()*7000);}
 }
-
-initGrid();
+function togglePause(){
+ paused=!paused;
+ const b=document.getElementById('pbtn');
+ if(paused){clearTimeout(timer);b.textContent='▶ 继续';setSt('paused');}
+ else{b.textContent='⏸ 暂停';setSt('live');setTimeout(()=>ait(false),1000);}
+}
+function setSt(s){
+ const d=document.getElementById('sdot'),t=document.getElementById('stxt');
+ if(s==='live'){d.className='sdot live';t.textContent='讨论进行中';}
+ else if(s==='thinking'){d.className='sdot live';t.textContent='顾问思考中...';}
+ else{d.className='sdot';t.textContent='已暂停';}
+}
+ig();
 </script>
 </body>
 </html>
